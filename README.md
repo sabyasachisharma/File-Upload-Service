@@ -32,7 +32,23 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 3. Running Tests
+### 3. Running the Worker Service
+The service includes a background worker that processes uploaded files. The worker:
+- Polls the queue for new upload jobs
+- Downloads files from S3
+- Sends them through preprocessing
+- Updates job status in the database
+
+To run the worker:
+```bash
+# Using Docker
+docker run fastapi-upload-service python -m app.worker
+
+# Manual Setup
+python -m app.worker
+```
+
+### 4. Running Tests
 ```bash
 # Run tests
 python -m pytest -v
@@ -48,6 +64,8 @@ python -m pytest tests/test_upload.py -k test_health_check -v
 ## 🔍 API Endpoints
 
 ### POST `/api/upload`
+Initiates a file upload process. The file will be processed asynchronously by the worker service.
+
 **Headers:**
 - `access_token: supersecretapikey123`
 
